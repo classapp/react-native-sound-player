@@ -4,92 +4,104 @@
 'use strict'
 
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native'
-const { RNSoundPlayer } = NativeModules
-
-const _soundPlayerEmitter = new NativeEventEmitter(RNSoundPlayer)
+// const { RNSoundPlayer } = NativeModules
+// const _soundPlayerEmitter = new NativeEventEmitter(RNSoundPlayer)
 let _finishedPlayingListener = null
 let _finishedLoadingListener = null
 
-export default {
+export default class Player{
+  constructor(params) {
+    this.RNSoundPlayer = NativeModules.RNSoundPlayer
+    this._soundPlayerEmitter = new NativeEventEmitter(this.RNSoundPlayer)
+  }
+  
+  playSoundFile = (name, type) => {
+    this.RNSoundPlayer.playSoundFile(name, type)
+  }
 
-  playSoundFile: (name: string, type: string) => {
-    RNSoundPlayer.playSoundFile(name, type)
-  },
+  loadSoundFile = (name, type) => {
+    this.RNSoundPlayer.loadSoundFile(name, type)
+  }
 
-  loadSoundFile: (name: string, type: string) => {
-    RNSoundPlayer.loadSoundFile(name, type)
-  },
+  playUrl = (url) => {
+    this.RNSoundPlayer.playUrl(url)
+  }
 
-  playUrl: (url: string) => {
-    RNSoundPlayer.playUrl(url)
-  },
+  loadUrl = (url) => {
+    this.RNSoundPlayer.loadUrl(url)
+  }
 
-  loadUrl: (url: string) => {
-    RNSoundPlayer.loadUrl(url)
-  },
-
-  onFinishedPlaying: (callback: (success: boolean) => any) => {
+  onFinishedPlaying = (callback: (success: boolean) => any) => {
     if (_finishedPlayingListener) {
       _finishedPlayingListener.remove()
       _finishedPlayingListener = undefined
     }
 
-    _finishedPlayingListener = _soundPlayerEmitter.addListener(
+    _finishedPlayingListener = this._soundPlayerEmitter.addListener(
       'FinishedPlaying',
       callback
     )
-  },
+  }
 
-  onFinishedLoading: (callback: (success: boolean) => any) => {
+  onFinishedLoading = (callback: (success: boolean) => any) => {
     if (_finishedLoadingListener) {
       _finishedLoadingListener.remove()
       _finishedLoadingListener = undefined
     }
 
-    _finishedLoadingListener = _soundPlayerEmitter.addListener(
+    _finishedLoadingListener = this._soundPlayerEmitter.addListener(
       'FinishedLoading',
       callback
     )
-  },
+  }
 
-  addEventListener: (eventName: 'FinishedLoading' | 'FinishedPlaying' | 'FinishedLoadingURL' | 'FinishedLoadingFile', callback: Function) => _soundPlayerEmitter.addListener(eventName, callback),
+  addEventListener = (eventName: 'FinishedLoading' | 'FinishedPlaying' | 'FinishedLoadingURL' | 'FinishedLoadingFile', callback: Function) => this._soundPlayerEmitter.addListener(eventName, callback)
 
-  play: () => {
+  play = () => {
     // play and resume has the exact same implementation natively
-    RNSoundPlayer.resume()
-  },
+    this.RNSoundPlayer.resume()
+  }
 
-  pause: () => {
-    RNSoundPlayer.pause()
-  },
+  reset = () => {
+    this.RNSoundPlayer.reset()
+  }
 
-  resume: () => {
-    RNSoundPlayer.resume()
-  },
+  pause = () => {
+    this.RNSoundPlayer.pause()
+  }
 
-  stop: () => {
-    RNSoundPlayer.stop()
-  },
+  release = () => {
+    console.log(this.RNSoundPlayer)
+    this.RNSoundPlayer.release()
+  }
 
-  seek: (seconds: number) => {
-    RNSoundPlayer.seek(seconds)
-  },
+  resume = () => {
+    this.RNSoundPlayer.resume()
+  }
 
-  setVolume: (volume: number) => {
-    RNSoundPlayer.setVolume(volume)
-  },
+  stop = () => {
+    this.RNSoundPlayer.stop()
+  }
 
-  setSpeaker: (on: boolean) => {
+  seek = (seconds: number) => {
+    this.RNSoundPlayer.seek(seconds)
+  }
+
+  setVolume = (volume: number) => {
+    this.RNSoundPlayer.setVolume(volume)
+  }
+
+  setSpeaker = (on: boolean) => {
     if(Platform.OS === "android"){
       console.log("setSpeaker is not implement on Android");
     } else {
-      RNSoundPlayer.setSpeaker(on);
+      this.RNSoundPlayer.setSpeaker(on);
     }
-  },
+  }
 
-  getInfo: async () => RNSoundPlayer.getInfo(),
+  getInfo = async () => this.RNSoundPlayer.getInfo()
 
-  unmount: () => {
+  unmount = () => {
     if (_finishedPlayingListener) {
       _finishedPlayingListener.remove()
       _finishedPlayingListener = undefined

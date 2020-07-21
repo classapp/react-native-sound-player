@@ -72,6 +72,20 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void release() throws IllegalStateException {
+    if (this.mediaPlayer != null) {
+      this.mediaPlayer.release();
+    }
+  }
+
+   @ReactMethod
+  public void reset() throws IllegalStateException  {
+    if (this.mediaPlayer != null) {
+      this.mediaPlayer.reset();
+    }
+  }
+
+  @ReactMethod
   public void resume() throws IOException, IllegalStateException {
     if (this.mediaPlayer != null) {
       this.setVolume(this.volume);
@@ -92,6 +106,8 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
       this.mediaPlayer.seekTo((int)seconds * 1000);
     }
   }
+
+ 
 
   @ReactMethod
   public void setVolume(float volume) throws IOException {
@@ -178,7 +194,7 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
   }
 
   private void prepareUrl(final String url) throws IOException {
-    if (this.mediaPlayer == null) {
+    // if (this.mediaPlayer == null) {
       Uri uri = Uri.parse(url);
       this.mediaPlayer = MediaPlayer.create(getCurrentActivity(), uri);
       this.mediaPlayer.setOnCompletionListener(
@@ -201,12 +217,13 @@ public class RNSoundPlayerModule extends ReactContextBaseJavaModule {
           }
         }
       );
-    } else {
-      Uri uri = Uri.parse(url);
-      this.mediaPlayer.reset();
-      this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
-      this.mediaPlayer.prepareAsync();
-    }
+    // } 
+    // else {
+    //   Uri uri = Uri.parse(url);
+    //   this.mediaPlayer.reset();
+    //   this.mediaPlayer.setDataSource(getCurrentActivity(), uri);
+    //   this.mediaPlayer.prepareAsync();
+    // }
     WritableMap params = Arguments.createMap();
     params.putBoolean("success", true);
     sendEvent(getReactApplicationContext(), EVENT_FINISHED_LOADING, params);
